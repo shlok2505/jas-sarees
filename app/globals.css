@@ -1,26 +1,149 @@
 @import "tailwindcss";
 
+@theme {
+  --color-burgundy-950: #3a1b0d;
+  --color-burgundy-900: #d6cba8;
+  --color-burgundy-800: #c9bd98;
+  --color-maroon-900: #5a2b16;
+  --color-maroon-800: #6b351a;
+  --color-maroon-700: #79411f;
+  --color-crimson-600: #881320;
+  --color-gold-300: #f1dfb8;
+  --color-gold-400: #e5cb93;
+  --color-gold-500: #d8b477;
+  --color-gold-600: #b58a45;
+  --color-gold-700: #8f6c31;
+  --color-gold-800: #684d1e;
+  --color-ivory-50: #f5f0e2;
+  --color-ivory-100: #e8dec2;
+  --color-ivory-200: #d8caa5;
+  --font-serif: var(--font-cinzel), "Cinzel", ui-serif, serif;
+  --font-editorial: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-serif: var(--font-cinzel), 'Cinzel', serif;
+  --font-editorial: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #d6cba8;
+  color: #432817;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+.paper-surface {
+  background-color: #d6cba8;
+  background-image: url("/textures/handmade-paper.svg");
+  background-size: 420px 420px;
+}
+
+/* Luxury gold text gradients */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f8e5ad 0%, #d8b477 40%, #8f6427 70%, #f8e5ad 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gold-bright {
+  background: linear-gradient(135deg, #fff8df 0%, #f1dfb8 40%, #b58a45 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Luxury border styles */
+.border-gold-subtle {
+  border-color: rgba(216, 180, 119, 0.25);
+}
+
+.border-gold-accent {
+  border-color: rgba(216, 180, 119, 0.5);
+}
+
+/* Gold shimmer shine animation */
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    rgba(216, 180, 119, 0) 0%,
+    rgba(241, 223, 184, 0.6) 50%,
+    rgba(216, 180, 119, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: goldShimmer 3.5s infinite;
+}
+
+/* Subtle particle pulse */
+@keyframes divinePulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
+}
+
+.divine-aura {
+  animation: divinePulse 6s ease-in-out infinite;
+}
+
+/* Custom scrollbar for boutique elegance */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #c4b58c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #684d1e;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b451d;
+}
+
+.jas-slide-in {
+  animation: jasSlideIn 0.35s ease-out;
+}
+
+@keyframes jasSlideIn {
+  from {
+    transform: translateX(24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .jas-slide-in,
+  .shimmer-gold,
+  .divine-aura {
+    animation: none !important;
+  }
 }
