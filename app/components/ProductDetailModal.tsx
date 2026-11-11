@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { SareeProduct } from "../data/products";
-import { X, ShoppingBag, Clock, Sparkles, Check } from "lucide-react";
+import { X, ShoppingBag, Sparkles, Check } from "lucide-react";
 
 interface ProductDetailModalProps {
   product: SareeProduct | null;
@@ -16,7 +16,6 @@ export default function ProductDetailModal({
   onClose,
   onAddToCart,
 }: ProductDetailModalProps) {
-  const [selectedImage, setSelectedImage] = useState(0);
   const [added, setAdded] = useState(false);
 
   if (!product) return null;
@@ -54,35 +53,14 @@ export default function ProductDetailModal({
             {/* Primary Large Image */}
             <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden mb-4 border border-[#9b7a3e]/30 shadow-inner">
               <Image
-                src={product.images[selectedImage] || product.images[0]}
+                src={product.image}
                 alt={product.name}
                 fill
+                unoptimized
                 className="object-cover object-center"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-              {product.badge && <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#d6cba8]/90 border border-[#9b7a3e]/50 text-[10px] uppercase tracking-wider text-[#75521e] font-serif">
-                {product.badge}
-              </div>}
             </div>
-
-            {/* Thumbnail Row */}
-            {product.images.length > 1 && (
-              <div className="flex items-center gap-3">
-                {product.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedImage(idx)}
-                    className={`relative w-16 h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                      selectedImage === idx
-                        ? "border-[#9b7a3e] scale-105"
-                        : "border-[#9b7a3e]/25 opacity-70 hover:opacity-100"
-                    }`}
-                  >
-                    <Image src={img} alt="Thumbnail" fill className="object-cover" sizes="64px" />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Right: Detailed Saree Spec & Direct Actions */}
@@ -90,71 +68,32 @@ export default function ProductDetailModal({
             <div>
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#75521e] font-serif mb-2">
                 <Sparkles className="w-3.5 h-3.5 text-[#75521e]" />
-                <span>{product.collectionLabel}</span>
+                <span>{product.type}</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-serif text-[#52351b] font-normal mb-2 leading-tight">
                 {product.name}
               </h2>
 
-              <p className="text-xs text-[#50351e]/50 tracking-wider uppercase mb-4">
-                SKU: {product.sku}
-              </p>
-
               {/* Price Banner */}
               <div className="flex items-baseline gap-3 mb-6 p-4 rounded-xl bg-[#c7ba95] border border-[#9b7a3e]/25">
                 <span className="text-2xl sm:text-3xl font-serif font-bold text-[#52351b]">
                   {formatPrice(product.price)}
                 </span>
-                {product.originalPrice > product.price && (
-                  <span className="text-sm text-[#50351e]/40 line-through">
-                    {formatPrice(product.originalPrice)}
-                  </span>
-                )}
-              </div>
-
-              {/* Weaving & Fabric Specifications */}
-              <div className="space-y-3 mb-6 text-xs text-[#50351e]/80">
-                <div className="flex justify-between border-b border-[#9b7a3e]/15 pb-2">
-                  <span className="text-[#50351e]/60">Weaving Technique:</span>
-                  <span className="text-[#432817] font-medium">{product.weave}</span>
-                </div>
-                <div className="flex justify-between border-b border-[#9b7a3e]/15 pb-2">
-                  <span className="text-[#50351e]/60">Zari Purity:</span>
-                  <span className="text-[#75521e] font-medium">{product.zari}</span>
-                </div>
-                <div className="flex justify-between border-b border-[#9b7a3e]/15 pb-2">
-                  <span className="text-[#50351e]/60">Fabric Composition:</span>
-                  <span className="text-[#432817] font-medium">{product.fabric}</span>
-                </div>
-                <div className="flex justify-between border-b border-[#9b7a3e]/15 pb-2">
-                  <span className="text-[#50351e]/60">Artisan Loom Time:</span>
-                  <span className="text-[#432817] font-medium flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-[#75521e]" />
-                    {product.loomDays} Days of Handloom Craft
-                  </span>
-                </div>
-                <div className="flex justify-between border-b border-[#9b7a3e]/15 pb-2">
-                  <span className="text-[#50351e]/60">Blouse Piece:</span>
-                  <span className="text-[#432817] font-medium">{product.blousePiece}</span>
-                </div>
               </div>
 
               {/* Narrative Story */}
-              <div className="mb-6">
-                <h4 className="text-xs uppercase tracking-widest text-[#75521e] font-serif mb-2">
-                  Artisan Notes
-                </h4>
-                <p className="text-xs sm:text-sm text-[#50351e]/80 font-light leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
+              {product.description && (
+                <div className="mb-6">
+                  <h4 className="text-xs uppercase tracking-widest text-[#75521e] font-serif mb-2">
+                    About this saree
+                  </h4>
+                  <p className="text-xs sm:text-sm text-[#50351e]/80 font-light leading-relaxed">
+                    {product.description}
+                  </p>
+                </div>
+              )}
 
-              {/* Care Instructions */}
-              <div className="p-3 rounded-lg bg-[#c7ba95]/60 border border-[#9b7a3e]/20 text-[11px] text-[#50351e]/70 mb-6">
-                <span className="text-[#75521e] font-semibold">Care: </span>
-                {product.care}
-              </div>
             </div>
 
             {/* Bottom Actions */}

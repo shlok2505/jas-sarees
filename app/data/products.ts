@@ -1,23 +1,24 @@
+import { ApiSaree, imageSrc } from "../lib/api";
+
+// Only what the backend actually stores: type, price, photo, AI title + description.
 export interface SareeProduct {
   id: string;
   name: string;
-  collection: "Bridal" | "Banarasi" | "Kanchipuram" | "Organza" | "Festive";
-  collectionLabel: string;
+  type: string;
   price: number;
-  originalPrice: number;
-  weave: string;
-  zari: string;
-  color: string;
-  fabric: string;
-  loomDays: number;
-  blousePiece: string;
-  care: string;
-  images: string[];
+  image: string;
   description: string;
-  silkMarkCertified: boolean;
-  badge?: string;
-  sku: string;
 }
 
-// Connect the product API here. The storefront intentionally starts with no demo records.
-export const SAREE_PRODUCTS: SareeProduct[] = [];
+// Listings without a photo can't be shown in a shop, so they are skipped.
+export function toProduct(s: ApiSaree): SareeProduct | null {
+  if (!s.imageUrl) return null;
+  return {
+    id: String(s.id),
+    name: s.title?.trim() || `${s.type} Saree`,
+    type: s.type,
+    price: s.price,
+    image: imageSrc(s.imageUrl),
+    description: s.description?.trim() ?? "",
+  };
+}

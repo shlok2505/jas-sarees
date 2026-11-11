@@ -81,7 +81,8 @@ export default function CartDrawer({
               >
                 <div className="relative w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 border border-[#9b7a3e]/30">
                   <Image
-                    src={item.product.images[0]}
+                    src={item.product.image}
+                    unoptimized
                     alt={item.product.name}
                     fill
                     className="object-cover"
@@ -95,7 +96,7 @@ export default function CartDrawer({
                       {item.product.name}
                     </h4>
                     <p className="text-[11px] text-[#75521e] font-light mt-0.5">
-                      {item.product.weave}
+                      {item.product.type}
                     </p>
                     <p className="text-xs font-semibold text-[#52351b] mt-1">
                       {formatPrice(item.product.price)}

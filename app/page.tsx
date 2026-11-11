@@ -9,7 +9,8 @@ import ProductDetailModal from "./components/ProductDetailModal";
 import CartDrawer, { CartItem } from "./components/CartDrawer";
 import OurStory from "./components/OurStory";
 import Footer from "./components/Footer";
-import { SareeProduct } from "./data/products";
+import { SareeProduct, toProduct } from "./data/products";
+import { fetchSarees } from "./lib/api";
 import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -24,6 +25,21 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [products, setProducts] = useState<SareeProduct[]>([]);
+  const [productsState, setProductsState] = useState<"loading" | "ready" | "error">("loading");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchSarees(controller.signal)
+      .then((list) => {
+        setProducts(list.map(toProduct).filter((p): p is SareeProduct => p !== null));
+        setProductsState("ready");
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") setProductsState("error");
+      });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -123,6 +139,8 @@ export default function Home() {
       <main>
         <HeroSection />
         <ProductCatalog
+          products={products}
+          status={productsState}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           onQuickView={setSelectedProduct}

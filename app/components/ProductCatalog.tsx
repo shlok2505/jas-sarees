@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { SareeProduct, SAREE_PRODUCTS } from "../data/products";
+import { SareeProduct } from "../data/products";
 
 interface ProductCatalogProps {
+  products: SareeProduct[];
+  status: "loading" | "ready" | "error";
   selectedCategory: string;
   onCategoryChange: (cat: string) => void;
   onQuickView: (product: SareeProduct) => void;
@@ -16,6 +18,8 @@ const formatPrice = (p: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(p);
 
 export default function ProductCatalog({
+  products,
+  status,
   selectedCategory,
   onCategoryChange,
   onQuickView,
@@ -24,25 +28,24 @@ export default function ProductCatalog({
 }: ProductCatalogProps) {
   const [addedId, setAddedId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"featured" | "price-asc" | "price-desc">("featured");
-  const categories = ["All", ...new Set(SAREE_PRODUCTS.map((product) => product.collection))];
+  const categories = ["All", ...new Set(products.map((product) => product.type))];
 
   const filteredProducts = useMemo(() => {
-    return SAREE_PRODUCTS.filter((prod) => {
-      const matchesCat = selectedCategory === "All" || prod.collection === selectedCategory;
+    return products.filter((prod) => {
+      const matchesCat = selectedCategory === "All" || prod.type === selectedCategory;
       const q = searchQuery.toLowerCase();
       const matchesSearch =
         !q ||
         prod.name.toLowerCase().includes(q) ||
-        prod.weave.toLowerCase().includes(q) ||
-        prod.color.toLowerCase().includes(q) ||
-        prod.collection.toLowerCase().includes(q);
+        prod.type.toLowerCase().includes(q) ||
+        prod.description.toLowerCase().includes(q);
       return matchesCat && matchesSearch;
     }).sort((a, b) => {
       if (sortBy === "price-asc") return a.price - b.price;
       if (sortBy === "price-desc") return b.price - a.price;
       return 0;
     });
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [products, selectedCategory, searchQuery, sortBy]);
 
   return (
     <section id="featured" className="paper-surface border-t border-[#9b7a3e]/15 px-4 py-24 sm:px-8">
@@ -52,7 +55,7 @@ export default function ProductCatalog({
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em] text-[#75521e]">The atelier</p>
             <h2 className="font-serif text-3xl tracking-tight sm:text-5xl">Featured sarees</h2>
           </div>
-          {SAREE_PRODUCTS.length > 0 && <label className="text-[11px] uppercase tracking-[0.18em] text-[#50351e]/50">
+          {products.length > 0 && <label className="text-[11px] uppercase tracking-[0.18em] text-[#50351e]/50">
             Sort
             <select
               value={sortBy}
@@ -66,7 +69,7 @@ export default function ProductCatalog({
           </label>}
         </div>
 
-        {SAREE_PRODUCTS.length > 0 && <div className="mb-12 flex gap-2 overflow-x-auto pb-2">
+        {products.length > 0 && <div className="mb-12 flex gap-2 overflow-x-auto pb-2">
           {categories.map((category) => (
             <button
               key={category}
@@ -84,7 +87,13 @@ export default function ProductCatalog({
 
         {filteredProducts.length === 0 && (
           <p className="py-16 text-center font-editorial text-lg text-[#75521e]">
-            {SAREE_PRODUCTS.length === 0 ? "The collection will appear here soon." : "No sarees match that search."}
+            {status === "loading"
+              ? "Unfolding the collection…"
+              : status === "error"
+                ? "We couldn't load the collection right now. Please try again shortly."
+                : products.length === 0
+                  ? "The collection will appear here soon."
+                  : "No sarees match that search."}
           </p>
         )}
 
@@ -97,27 +106,19 @@ export default function ProductCatalog({
                 className="group relative mb-4 aspect-[3/4] overflow-hidden bg-[#c7ba95]"
               >
                 <Image
-                  src={product.images[0]}
+                  src={product.image}
+                  unoptimized
                   alt={product.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                {product.badge && (
-                  <span className="absolute left-3 top-3 bg-[#d6cba8]/85 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-[#75521e]">
-                    {product.badge}
-                  </span>
-                )}
               </button>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-[#75521e]">{product.collectionLabel}</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#75521e]">{product.type}</p>
               <h3 className="mt-1 font-serif text-lg leading-snug">{product.name}</h3>
-              <p className="mt-1 text-xs text-[#50351e]/55">{product.weave}</p>
               <div className="mt-4 flex items-end justify-between">
                 <div>
                   <p className="font-editorial text-xl text-[#52351b]">{formatPrice(product.price)}</p>
-                  {product.originalPrice > product.price && (
-                    <p className="text-xs text-[#50351e]/35 line-through">{formatPrice(product.originalPrice)}</p>
-                  )}
                 </div>
                 <button
                   type="button"
