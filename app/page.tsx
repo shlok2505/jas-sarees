@@ -7,6 +7,7 @@ import HeroSection from "./components/HeroSection";
 import ProductCatalog from "./components/ProductCatalog";
 import ProductDetailModal from "./components/ProductDetailModal";
 import CartDrawer, { CartItem } from "./components/CartDrawer";
+import CheckoutModal from "./components/CheckoutModal";
 import OurStory from "./components/OurStory";
 import Footer from "./components/Footer";
 import { SareeProduct, toProduct } from "./data/products";
@@ -21,6 +22,7 @@ export default function Home() {
   const [introMode, setIntroMode] = useState<IntroMode>("pending");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<SareeProduct | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -165,7 +167,15 @@ export default function Home() {
         items={cart}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={(id) => setCart((prev) => prev.filter((item) => item.product.id !== id))}
+        onCheckout={() => {
+          setCartOpen(false);
+          setCheckoutOpen(true);
+        }}
       />
+
+      {checkoutOpen && (
+        <CheckoutModal items={cart} onClose={() => setCheckoutOpen(false)} onCartChange={setCart} />
+      )}
 
       {searchOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-[#c7ba95]/90 px-4 pt-24 backdrop-blur-md">
